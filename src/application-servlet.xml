@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:mvc="http://www.springframework.org/schema/mvc" 
+    xmlns:p="http://www.springframework.org/schema/p" 
+    xmlns:context="http://www.springframework.org/schema/context" 
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd 
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+		
+	<!-- 
+		SpringMVC中的组件扫描器<context:component-scan base-package="com.hp"/>
+		与Spring的application.xml中的<context:annotation-config/>有重复，当重复时，仅前者有效:
+	 -->
+	<!-- SpringMVC （包）组件扫描器  用来扫描注解 -->
+    <context:component-scan base-package="com.hp"/>
+	<!-- mvc 模型驱动  主要用于解析springMVC特定的注解 -->
+	<mvc:annotation-driven/>
+	
+	<!-- 静态资源过滤 -->
+	<mvc:resources mapping="easyUI/**" location="easyUI/" />
+	
+	<!-- 视图解析器  -->
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	    <!-- 返回的视图字符串 +前缀 -->
+	    <property name="prefix" value="/"/>
+	    <!-- 返回的视图字符串 +后缀 -->
+	    <property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<!-- json的http请求信息转换器  会被下面的引用 -->
+	<bean id="jsonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">  
+	    <!-- 加上下面配置可以防止415错误(不支持的媒体类型) -->	
+	    <property name="supportedMediaTypes">  
+	        <list>  
+	            <value>application/json;charset=UTF-8</value>  
+	        </list>  
+	    </property>  
+	</bean>
+	<!-- json格式适配器,可以帮助前后转json格式的复合对象-->	
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">  
+	    <property name="messageConverters">  
+	        <list>  
+	            <ref bean="jsonHttpMessageConverter" />  
+	        </list>
+	    </property>  
+	</bean>  
+	  
+
+	
+</beans>

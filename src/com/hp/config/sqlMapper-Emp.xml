@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace:dao层接口的路径 -->
+<mapper namespace="com.hp.dao.EmpDao">
+	<resultMap id="empMap" type="Emp">
+		<id property="empId" column="emp_id"/>
+		<result property="empName" column="emp_name"/>
+		<result property="empAge" column="emp_age"/>
+	</resultMap>	
+	
+	<select id="getEmpCount" resultType="int">
+		select count(*) from t_emp
+	</select>
+	
+	<select id="getEmpList" parameterType="Page" resultMap="empMap">
+		select emp_id, emp_name, emp_age
+		  from (select rownum rn, emp_id, emp_name, emp_age
+		          from t_emp
+		         where rownum &lt; #{endIndex}
+		         <if test="params.employee.empName != null">
+		         	and emp_name like #{params.employee.empName}
+		         </if>
+		         <if test="params.employee.empAge != 0">
+		         	and emp_age &gt; #{params.employee.empAge}
+		         </if>
+		         ) t
+		 where t.rn &gt; #{startIndex}
+	</select>
+</mapper>

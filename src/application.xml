@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:aop="http://www.springframework.org/schema/aop"
+     xmlns:tx="http://www.springframework.org/schema/tx"
+     xmlns:p="http://www.springframework.org/schema/p"
+     xmlns:context="http://www.springframework.org/schema/context"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/tx
+     http://www.springframework.org/schema/tx/spring-tx.xsd
+     http://www.springframework.org/schema/aop 
+     http://www.springframework.org/schema/aop/spring-aop.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context.xsd">
+		
+	<!-- 全局注解配置扫描器 -->
+	<context:annotation-config/>
+		
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" 
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl"></property>
+		<property name="username" value="scott"></property>
+		<property name="password" value="1234"></property>
+	</bean>
+	
+	<!-- mybatis相关配置信息 -->
+	<bean id="sessionFactory" class=" org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="configLocation">
+			<value>classpath:mybaits-config.xml</value>
+		</property>
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:com/hp/config/*.xml</value>
+			</list>
+		</property>
+	</bean>	
+	
+	<!-- mapper扫描器 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 扫描包路径，如果需要扫描多个包，逗号隔开 -->
+		<property name="basePackage" value="com.hp.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sessionFactory" />
+	</bean>
+	
+	<!-- 配置事务  -->
+	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+		<property name="dataSource" ref="dataSource" /> 
+	</bean> 
+	<tx:advice id="txAdvice" transaction-manager="txManager"> 
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED"/> 
+			<tx:method name="batchDelete*" propagation="REQUIRED"/> 
+			<tx:method name="delete*" propagation="REQUIRED"/> 
+		</tx:attributes> 
+	</tx:advice> 
+	
+	<aop:config>
+		<aop:pointcut id="txPoint"
+			expression="execution(* com.hp.service.*.*(..))" />
+		<aop:advisor pointcut-ref="txPoint" advice-ref="txAdvice"  />
+	</aop:config>
+    
+</beans>
