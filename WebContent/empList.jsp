@@ -9,7 +9,7 @@
 <link rel="stylesheet" type="text/css" href="easyUI/demo.css">
 <script type="text/javascript" src="easyUI/js/jquery.min.js"></script>
 <script type="text/javascript" src="easyUI/js/jquery.easyui.min.js"></script>
-<title>Insert title here</title>
+<title>Insert title</title>
 </head>
 <body>
 <table id="userDataGrid" class="easyui-datagrid" title="用户信息列表" style="width:1000px;height:250px"
@@ -34,7 +34,9 @@
 		</tr>
 	</thead>
 </table>
-
+<div>
+	<p>长江大学</p>
+</div>
 
 </body>
 </html>
